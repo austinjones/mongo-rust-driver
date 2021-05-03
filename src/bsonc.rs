@@ -17,7 +17,8 @@ pub struct Bsonc {
 impl Bsonc {
     /// Create a new bsonc which will free on drop.
     pub fn new() -> Bsonc {
-        let inner: *const bindings::bson_t = unsafe { bindings::bson_sized_new(&mut 120u64) };
+        let inner: *const bindings::bson_t =
+            unsafe { bindings::bson_sized_new(120u64 as *mut u64) };
         assert!(!inner.is_null());
 
         Bsonc {
