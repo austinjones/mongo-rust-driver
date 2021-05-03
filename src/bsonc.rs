@@ -107,6 +107,7 @@ impl Drop for Bsonc {
     fn drop(&mut self) {
         if self.destroy_inner_on_drop {
             unsafe {
+                println!("{:?}", (*self.inner).flags);
                 bindings::bson_destroy(self.inner);
             }
         }
