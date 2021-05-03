@@ -107,7 +107,11 @@ impl Drop for Bsonc {
     fn drop(&mut self) {
         if self.destroy_inner_on_drop {
             unsafe {
-                println!("{:?}", (*self.inner).flags);
+                let flags = (*self.inner).flags;
+                if flags == 2 {
+                    println!("Len: {:?}", (*self.inner).len);
+                    println!("Data: {:?}", (*self.inner).padding);
+                }
                 bindings::bson_destroy(self.inner);
             }
         }
