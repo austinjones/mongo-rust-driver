@@ -110,7 +110,7 @@ impl Drop for Bsonc {
                 let flags = (*self.inner).flags;
                 if flags == 2 {
                     println!("Len: {:?}", (*self.inner).len);
-                    println!("Data: {:?}", (*self.inner).padding);
+                    println!("Data: {:x?}", (*self.inner).padding);
                 }
                 bindings::bson_destroy(self.inner);
             }
