@@ -2,16 +2,15 @@
 //!
 //! `Collection` is the main type used when accessing collections.
 
+use std::borrow::Cow;
 use std::ptr;
 use std::time::Duration;
-use std::{borrow::Cow, mem};
 use std::{ffi::CStr, mem::MaybeUninit};
 
 use crate::bsonc;
 use crate::mongoc::bindings;
 
 use bson::Document;
-use mongoc_sys::bindings::bson_t;
 
 use super::bsonc::Bsonc;
 use super::client::Client;
@@ -325,7 +324,7 @@ impl<'a> Collection<'a> {
         // Bsonc to store the reply.
         // mongoc_collection_command_simple expects an *uninitialized* bson_t.
         // If we pass an initialized value, it will leak.
-        let mut reply: bson_t = unsafe { MaybeUninit::zeroed().assume_init() };
+        let mut reply: bindings::bson_t = unsafe { MaybeUninit::zeroed().assume_init() };
         // Empty error that might be filled
         let mut error = BsoncError::empty();
 

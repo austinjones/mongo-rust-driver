@@ -1,8 +1,8 @@
 //! Access to a MongoDB database.
 
-use std::borrow::Cow;
 use std::ffi::{CStr, CString};
 use std::ptr;
+use std::{borrow::Cow, mem::MaybeUninit};
 
 use crate::mongoc::bindings;
 use bson::Document;
@@ -125,7 +125,7 @@ impl<'a> Database<'a> {
         assert!(!self.inner.is_null());
 
         // Bsonc to store the reply
-        let mut reply = Bsonc::new();
+        let mut reply: bindings::bson_t = unsafe { MaybeUninit::zeroed().assume_init() };
         // Empty error that might be filled
         let mut error = BsoncError::empty();
 
@@ -137,17 +137,13 @@ impl<'a> Database<'a> {
                     Some(ref prefs) => prefs.inner(),
                     None => ptr::null(),
                 },
-                reply.mut_inner(),
+                &mut reply,
                 error.mut_inner(),
             )
         };
 
-        unsafe {
-            (*reply.mut_inner()).flags &= !2u32;
-        }
-
         if success == 1 {
-            match reply.as_document() {
+            match Bsonc::from_ptr(&reply).as_document() {
                 Ok(document) => return Ok(document),
                 Err(error) => return Err(error.into()),
             }
