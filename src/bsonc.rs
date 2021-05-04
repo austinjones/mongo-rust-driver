@@ -18,7 +18,7 @@ impl Bsonc {
     /// Create a new bsonc which will free on drop.
     pub fn new() -> Bsonc {
         let inner: *const bindings::bson_t =
-            unsafe { bindings::bson_sized_new(128u64 as libc::c_ulong) };
+            unsafe { bindings::bson_sized_new(128usize as libc::c_ulong) };
         assert!(!inner.is_null());
 
         Bsonc {
