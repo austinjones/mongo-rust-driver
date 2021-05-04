@@ -342,10 +342,16 @@ impl<'a> Collection<'a> {
         };
 
         if success == 1 {
-            match Bsonc::from_ptr(&reply).as_document() {
+            let result = Bsonc::from_ptr(&reply).as_document();
+
+            unsafe {
+                bindings::bson_destroy(&mut reply);
+            }
+
+            match result {
                 Ok(document) => return Ok(document),
                 Err(error) => return Err(error.into()),
-            }
+            };
         } else {
             Err(error.into())
         }
