@@ -44,7 +44,6 @@ pub mod bindings {
         pub fn bson_free(mem: *mut ::libc::c_void) -> ();
         pub fn bson_get_data(bson: *const bson_t) -> *const uint8_t;
         pub fn bson_new() -> *mut bson_t;
-        pub fn bson_sized_new(size: size_t) -> *mut bson_t;
         pub fn bson_new_from_data(data: *const uint8_t, length: size_t) -> *mut bson_t;
         pub fn bson_reader_new_from_data(
             data: *const uint8_t,
