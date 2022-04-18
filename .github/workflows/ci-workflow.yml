@@ -5,7 +5,6 @@ name: Continuous integration
 jobs:
   check:
     name: cargo check
-    needs: dependencies
     runs-on: ubuntu-latest
     steps:
       - name: checkout
