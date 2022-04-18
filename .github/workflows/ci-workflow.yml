@@ -10,9 +10,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: cat cargo config
-        run: cat ~/.cargo/config
-
       - name: rustup toolchain list
         run: rustup toolchain list
 
