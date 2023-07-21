@@ -243,21 +243,24 @@ impl<'a> Collection<'a> {
         let default_options = AggregateOptions::default();
         let options         = options.unwrap_or(&default_options);
 
+        let agg_options = match options.options {
+            Some(ref opts) => Some(Bsonc::from_document(opts)?),
+            None => None,
+        };
+
         let cursor_ptr = unsafe {
             bindings::mongoc_collection_aggregate(
                 self.inner,
                 options.query_flags.flags(),
                 Bsonc::from_document(pipeline)?.inner(),
-                match options.options {
-                    Some(ref o) => {
-                        Bsonc::from_document(o)?.inner()
-                    },
-                    None => ptr::null()
+                match agg_options {
+                    Some(ref doc) => doc.inner(),
+                    None => ptr::null(),
                 },
                 match options.read_prefs {
                     Some(ref prefs) => prefs.inner(),
-                    None => ptr::null()
-                }
+                    None => ptr::null(),
+                },
             )
         };
 
