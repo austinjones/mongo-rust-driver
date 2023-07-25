@@ -6,7 +6,7 @@ mod helpers;
 use bson::doc;
 
 use mongo_driver::CommandAndFindOptions;
-use mongo_driver::collection::{CountOptions,FindAndModifyOperation};
+use mongo_driver::collection::{AggregateOptions, CountOptions, FindAndModifyOperation};
 use mongo_driver::client::{ClientPool,Uri};
 use mongo_driver::flags;
 
@@ -34,6 +34,36 @@ fn test_aggregate() {
     };
 
     let total = collection.aggregate(&pipeline, None).unwrap().next().unwrap().unwrap();
+
+    assert_eq!(Ok(5), total.get_i32("total"));
+}
+
+#[test]
+fn test_aggregate_with_options() {
+    let uri      = Uri::new(helpers::mongodb_test_connection_string()).unwrap();
+    let pool     = ClientPool::new(uri, None);
+    let client   = pool.pop();
+    let mut collection = client.get_collection("rust_driver_test", "aggregate_with_option");
+    collection.drop().unwrap_or(());
+
+    for _ in 0..5 {
+        collection.insert(&doc!{"key": 1}, None).expect("Could not insert");
+    }
+
+    let pipeline = doc!{
+        "pipeline": [
+            {
+                "$group": {
+                    "_id": "$key",
+                    "total": {"$sum": "$key"}
+                }
+            }
+        ]
+    };
+    let mut options = AggregateOptions::default();
+    options.options = Some(doc! {"allowDiskUse":true});
+
+    let total = collection.aggregate(&pipeline, Some(&options)).unwrap().next().unwrap().unwrap();
 
     assert_eq!(Ok(5), total.get_i32("total"));
 }
